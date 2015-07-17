@@ -1,0 +1,14 @@
+
+extends layout
+
+block content
+  //include navbar
+  form(id="uploadForm",
+    method="post",
+    action="/api/upload",
+    enctype="multipart/form-data")
+    input(type="file", name="csvToUpload")
+    input(type="submit", name="csvSubmit", value="submitCSV")
+
+
+block scripts

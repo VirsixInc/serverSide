@@ -1,0 +1,80 @@
+[Error: /var/www/devry/node_modules/mongodb/node_modules/bson/build/Release/bson.node: invalid ELF header]
+js-bson: Failed to load c++ bson extension, using pure JS version
+{ [Error: Cannot find module '../build/Release/bson'] code: 'MODULE_NOT_FOUND' }
+js-bson: Failed to load c++ bson extension, using pure JS version
+{ [Error: Cannot find module '../build/Release/bson'] code: 'MODULE_NOT_FOUND' }
+js-bson: Failed to load c++ bson extension, using pure JS version
+{ [Error: Cannot find module '../build/Release/bson'] code: 'MODULE_NOT_FOUND' }
+js-bson: Failed to load c++ bson extension, using pure JS version
+{ [Error: Cannot find module '../build/Release/bson'] code: 'MODULE_NOT_FOUND' }
+js-bson: Failed to load c++ bson extension, using pure JS version
+Express server listening on port 8080
+connected to database :: node-login
+DATABASE OPENED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+O IS FALSE
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+[ 'cards_chemistries', 'cards_immunes' ]
+USER AND PASSWORD IS DEFINED
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
+O IS TRUE
+[ 'cards_chemistries', 'cards_immunes' ]
+USER OR PASSWORD IS UNDEFINED
