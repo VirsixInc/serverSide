@@ -283,43 +283,52 @@ exports.addAssignmentToAllStudents = (assignmentName, callback)->
   else
     callback "Assignment does not exist"
 
+exports.pullTermMastery = (assignmentName, student, callback)->
+
 exports.setTermMastery = (assignmentName, term, student, mastery, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   if currentAssignments.indexOf(assignmentName) > -1
-    studentModel.find({username:student},(err, doc)->
+    studentModel.findOne({username:student},(err, doc)->
       exists = false
-      for assign in doc[0].assignments
+      for assign in doc.assignments
         if assign.assignmentName == assignmentName
           exists = true
           break
       if exists == true
-        studentModel.findById(doc[0].id,(err,studModel)->
-          if err
-            console.log err
-            return
-          else
-            newArr = studModel.assignments
+        newArr = doc.assignments
 
-            assignIndex = newArr.map((newArr) ->
-              newArr.assignmentName
-            ).indexOf assignmentName
-            assignTerms = newArr[assignIndex].terms
-            termIndex = assignTerms.map((assignTerms) ->
-              assignTerms.term
-            ).indexOf term
-            if termIndex > -1
-              studModel.assignments[assignIndex].terms[termIndex].set({term:term,mastery:mastery})
-            else
-              studModel.assignments[assignIndex].terms.push({term:term,mastery:mastery})
-            studModel.markModified("assignment")
-            studModel.save((err)->
-              if err
-                console.log(err)
-                callback "ERROR: " + err
-              else
-                callback "SUCCESS"
-            )
+        assignIndex = newArr.map((newArr) ->
+          newArr.assignmentName
+        ).indexOf assignmentName
+        assignTerms = newArr[assignIndex].terms
+        termIndex = assignTerms.map((assignTerms) ->
+          assignTerms.term
+        ).indexOf term
+        if termIndex > -1
+          doc.assignments[assignIndex].terms[termIndex] = {term:term,mastery:mastery}
+        else
+          doc.assignments[assignIndex].terms.push({term:term,mastery:mastery})
+        doc.markModified('assignments')
+        doc.save((err)->
+          if err
+            callback err
+          else
+            callback "SUCCESS"
         )
+        ###
+        studentModel.update({_id:doc.id},{$set:{assignments:doc.assignments}},(err,result)->
+          if err
+            callback err
+          else
+            callback result
+        )
+        studentModel.findByIdAndUpdate(doc[0].id,{$set:{assignments:doc[0].assignments}},(err,result)->
+          if err
+            callback err
+          else
+            callback result
+        )
+        ###
       else
         callback "ASSIGN IS NOT ASSIGNED TO STUDENT"
       )
