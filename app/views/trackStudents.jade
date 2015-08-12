@@ -16,7 +16,8 @@ block content
       tbody
       - for(var i =0; i<students.length;i++)
         tr
-          td=students[i].username
+          a(href='/student?studentName' + students[i].username)
+            td=students[i].username
           td=students[i].password
           td=students[i].teacher
           - for(var j = 0;j<students[i].assignments.length;j++)

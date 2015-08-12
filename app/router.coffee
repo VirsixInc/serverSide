@@ -42,6 +42,10 @@ module.exports = (app) ->
     dbHandle.setAssignmentMastery req.query.assignmentName, req.query.student, req.query.mastery, (results)->
       res.send(results)
 
+  app.get '/client/setTermMastery?*', (req, res)->
+    dbHandle.setTermMastery req.query.assignmentName, req.query.term, req.query.student, req.query.mastery, (results)->
+      res.send(results)
+
   app.get '/client/setAssignmentTime?*', (req, res)->
     dbHandle.setAssignmentTime req.query.assignmentName, req.query.student, req.query.time, (results)->
       res.send(results)
@@ -71,10 +75,10 @@ module.exports = (app) ->
 
   app.get '/home/listStudents', (req, res) ->
     dbHandle.pullStudents("Kathy", (results)->
-      if results != undefined
-        res.render 'trackStudents',
-          title: 'All students'
-          students: results.students
+      if results.students.length > 0
+        res.render 'trackStudents.jade',
+          title: 'All students',
+          students: results.students,
           assignments: results.assignments
       else
         res.write '<p> no students </p>'

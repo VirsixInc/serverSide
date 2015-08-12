@@ -26,25 +26,18 @@ studentSchema = mongoose.Schema({
   username: String,
   password: String,
   teacher: String,
-  assignments: []
+  assignments: [],
 })
 
-assignInfoSchema = mongoose.Schema({
-  subject: String
+termSchema = mongoose.Schema({
+  termsPerStudent:[]
 })
 
-mongoose.connect('mongodb://localhost:27017/brainrushDevelopment')
+mongoose.connect('mongodb://localhost:27017/brainrushcontent')
 mongConnect = mongoose.connection
 mongConnect.on('error', console.error.bind(console, 'connect error'))
 mongConnect.on('open',(callback)->
-  mongConnect.db.collections((err,names)->
-    for thisd in names
-      for supported in supportedTemplates
-        if thisd.s.name.indexOf(supported) > -1
-          currentAssignments.push(thisd.s.name)
-          currentAssignments.sort()
-          break
-  )
+  reset()
   console.log("DATABASE OPENED")
 )
 
@@ -54,6 +47,16 @@ mongConnect.on('open',(callback)->
 #
 #
 #
+
+reset = ()->
+  mongConnect.db.collections((err,names)->
+    for thisd in names
+      for supported in supportedTemplates
+        if thisd.s.name.indexOf(supported) > -1
+          currentAssignments.push(thisd.s.name)
+          currentAssignments.sort()
+          break
+  )
 
 writeDatabaseContent = (arrayToWrite, fileName)->
   contentModel = mongoose.model(fileName, genericContentSchema)
@@ -71,32 +74,6 @@ writeDatabaseContent = (arrayToWrite, fileName)->
           return true
         return false
       )
-
-###
-exports.uploadAssignInfo = (filePath, callback)->
-  fileName = path.basename(filePath)
-  fileName = fileName.split('.')[0]
-  infoModel = mongoose.model(fileName, assignInfoSchema)
-  mongConnect.db.collections((err,names)->
-    for thisd in names
-      if fileName == thisd.s.name
-        parsedCSV = parseCSV(filePath)
-        currInfoModel = new infoModel({
-          subject:
-        })
-        contentModel.count({
-          indiArg:currContentModel.indiArg
-        }, (err, count)->
-          if count < 1 && currContentModel.indiArg != undefined
-            new contentModel(currContentModel).save()
-            return true
-          else
-            console.log("Exists or is undefined")
-            return true
-          return false
-        )
-  )
-###
 
 exports.uploadNewFile = (filePath, callback)->
   fileName = path.basename(filePath)
@@ -158,6 +135,7 @@ parseCSV = (filePath) ->
 #
 #
 
+
 addStudentsFromCSV = (parsedStudentCSV, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   for student in parsedStudentCSV
@@ -179,6 +157,7 @@ addStudentsFromCSV = (parsedStudentCSV, callback)->
           return true
         return false
       )
+
 
 
 exports.addStudent = (teacher, username, password, callback) ->
@@ -222,9 +201,6 @@ exports.logStudentIn = (studentName, password, callback)->
       callback false
   )
 
-exports.addAssignmentToStudent = (studentName, assignmentName,callback)->
-
-
 exports.setAssignmentMastery = (assignmentName, student, mastery, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   if currentAssignments.indexOf(assignmentName) > -1
@@ -237,6 +213,7 @@ exports.setAssignmentMastery = (assignmentName, student, mastery, callback)->
       doc.save()
       callback doc
     )
+
 
 exports.setAssignmentTime = (assignmentName, student, time, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
@@ -290,7 +267,7 @@ exports.addAssignmentToAllStudents = (assignmentName, callback)->
               console.log("HAS IMAGES!!!")
           console.log(hasImages)
           studentModel.findByIdAndUpdate(doc.id,
-            {$push:{assignments:{assignmentName:assignmentName, mastery:0, timeSpentOnAssign:formatSeconds(0), hasImages:hasImages}}},(err, model) ->
+            {$push:{assignments:{assignmentName:assignmentName, mastery:0, timeSpentOnAssign:formatSeconds(0), hasImages:hasImages, terms:[]}}},(err, model) ->
               if err
                 console.log err
               else
@@ -306,7 +283,50 @@ exports.addAssignmentToAllStudents = (assignmentName, callback)->
   else
     callback "Assignment does not exist"
 
+exports.setTermMastery = (assignmentName, term, student, mastery, callback)->
+  studentModel = mongoose.model(studentCollection, studentSchema)
+  if currentAssignments.indexOf(assignmentName) > -1
+    studentModel.find({username:student},(err, doc)->
+      exists = false
+      for assign in doc[0].assignments
+        if assign.assignmentName == assignmentName
+          exists = true
+          break
+      if exists == true
+        studentModel.find({_id:doc[0].id},(err,studModel)->
+          if err
+            console.log err
+            return
+          else
+            newArr = studModel[0].assignments
+            console.log(newArr)
 
+            assignIndex = newArr.map((newArr) ->
+              newArr.assignmentName
+            ).indexOf assignmentName
+            assignTerms = newArr[assignIndex].terms
+            console.log(newArr[assignIndex])
+            termIndex = assignTerms.map((assignTerms) ->
+              assignTerms.term
+            ).indexOf term
+            if termIndex > -1
+              studModel[0].assignments[assignIndex].terms[termIndex].set({term:term,mastery:mastery})
+            else
+              studModel[0].assignments[assignIndex].terms.push({term:term,mastery:mastery})
+            studModel[0].save((err,product,numberAffected)->
+              if err
+                console.log(err)
+                callback "ERROR: " + err
+              else
+                console.log("PRODUCT:  " + product)
+            )
+        )
+      else
+        callback "ASSIGN IS NOT ASSIGNED TO STUDENT"
+      )
+    sortAssignments()
+  else
+    callback "ASSIGN IS NOT IN DATABASE"
 
 exports.pullStudentAssignments = (username, password, callback) ->
   studentModel = mongoose.model(studentCollection, studentSchema)
