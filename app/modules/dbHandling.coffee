@@ -293,32 +293,31 @@ exports.setTermMastery = (assignmentName, term, student, mastery, callback)->
           exists = true
           break
       if exists == true
-        studentModel.find({_id:doc[0].id},(err,studModel)->
+        studentModel.findById(doc[0].id,(err,studModel)->
           if err
             console.log err
             return
           else
-            newArr = studModel[0].assignments
-            console.log(newArr)
+            newArr = studModel.assignments
 
             assignIndex = newArr.map((newArr) ->
               newArr.assignmentName
             ).indexOf assignmentName
             assignTerms = newArr[assignIndex].terms
-            console.log(newArr[assignIndex])
             termIndex = assignTerms.map((assignTerms) ->
               assignTerms.term
             ).indexOf term
             if termIndex > -1
-              studModel[0].assignments[assignIndex].terms[termIndex].set({term:term,mastery:mastery})
+              studModel.assignments[assignIndex].terms[termIndex].set({term:term,mastery:mastery})
             else
-              studModel[0].assignments[assignIndex].terms.push({term:term,mastery:mastery})
-            studModel[0].save((err,product,numberAffected)->
+              studModel.assignments[assignIndex].terms.push({term:term,mastery:mastery})
+            studModel.markModified("assignment")
+            studModel.save((err)->
               if err
                 console.log(err)
                 callback "ERROR: " + err
               else
-                console.log("PRODUCT:  " + product)
+                callback "SUCCESS"
             )
         )
       else
