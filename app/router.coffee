@@ -28,8 +28,9 @@ module.exports = (app) ->
       res.send(assignToReturn)
     return
 
-  app.get '/client/pullAssignmentInfo?*', (req, res)->
-    dbHandle.pullAssignmentInfo req.query.assign, req.query.username, req.query.password (assignToReturn)->
+
+  app.get '/client/pullTermMastery?*', (req, res)->
+    dbHandle.pullTermMastery req.query.assign, req.query.student, (assignToReturn)->
       res.send(assignToReturn)
     return
 
@@ -43,7 +44,7 @@ module.exports = (app) ->
       res.send(results)
 
   app.get '/client/setTermMastery?*', (req, res)->
-    dbHandle.setTermMastery req.query.assignmentName, req.query.term, req.query.student, req.query.mastery, (results)->
+    dbHandle.setTermMastery req.query.assignmentName, req.query.term, req.query.student, req.query.correct, req.query.incorrect, (results)->
       res.send(results)
 
   app.get '/client/setAssignmentTime?*', (req, res)->
@@ -73,6 +74,25 @@ module.exports = (app) ->
   app.get '/home/addAssignment', (req, res) ->
     res.render 'assignments'
 
+  app.get '/home/student', (req,res)->
+    dbHandle.pullStudent(req.query.teacher, req.query.student, (results)->
+      if results.student != null
+        res.render 'indiStudent',
+          assignments:results.assignments,
+          student:results.student
+    )
+
+  app.get '/home/student/pullAssignment?*', (req, res)->
+    dbHandle.pullStudentAssignment(req.query.student, req.query.assignmentName, (assignToReturn)->
+      if assignToReturn
+        console.log(assignToReturn)
+        res.render 'terms',
+          assignment:assignToReturn
+      else
+        res.render "no terms"
+    )
+
+    return
   app.get '/home/listStudents', (req, res) ->
     dbHandle.pullStudents("Kathy", (results)->
       if results.students.length > 0

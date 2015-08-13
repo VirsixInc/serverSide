@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+  include navbar
+  #studentContainer(style="position:relative")
+
+    table.table.table-bordered
+      thead
+        tr
+          th Term
+          th Correct
+          th Incorrect
+      tbody
+      - for(var i =0;i<assignment.length;i++)
+        tr
+            td
+              =assignment[i].term
+            td
+              =assignment[i].correct
+            td
+              =assignment[i].incorrect
+block scripts

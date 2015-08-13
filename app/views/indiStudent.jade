@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+  include navbar
+  #studentContainer(style="position:relative")
+
+    table.table.table-bordered
+      thead
+        tr
+          - for(var i =0;i<assignments.length;i++)
+            th
+              a(href="/home/student/pullAssign?assign="+assignments[i])
+                =assignments[i]
+block scripts

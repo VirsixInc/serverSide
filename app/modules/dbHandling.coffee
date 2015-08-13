@@ -192,6 +192,19 @@ exports.pullStudents = (teacherName, callback)->
   )
   return
 
+exports.pullStudent = (teacherName, student, callback)->
+  studentModel = mongoose.model(studentCollection, studentSchema)
+  console.log(currentAssignments)
+  teacherName = "Kathy"
+  studentModel.find({teacher:teacherName, username:student}, '-_id -__v').sort([['username', 'ascending']]).exec( (err, results)->
+    if err
+      callback err
+    else
+      callback {students:results, assignments:currentAssignments}
+    return
+  )
+  return
+
 exports.logStudentIn = (studentName, password, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   studentModel.findOne({username:studentName, password:password},(err, doc)->
@@ -227,9 +240,6 @@ exports.setAssignmentTime = (assignmentName, student, time, callback)->
       doc.save()
       callback doc
     )
-
-exports.pullAssignmentInfo = (assignmentName, username, password, callback)->
-  callback "completed"
 
 exports.pullAssignmentMastery = (assignmentName, student, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
@@ -284,8 +294,27 @@ exports.addAssignmentToAllStudents = (assignmentName, callback)->
     callback "Assignment does not exist"
 
 exports.pullTermMastery = (assignmentName, student, callback)->
+  studentModel = mongoose.model(studentCollection, studentSchema)
+  if currentAssignments.indexOf(assignmentName) > -1
+    studentModel.findOne({username:student},(err, doc)->
+      exists = false
+      for assign in doc.assignments
+        if assign.assignmentName == assignmentName
+          exists = true
+          break
+      if exists == true
+        newArr = doc.assignments
+        assignIndex = newArr.map((newArr) ->
+          newArr.assignmentName
+        ).indexOf assignmentName
+        callback doc.assignments[assignIndex].terms
+      else
+        callback "NOT ASSIGNED"
+    )
+  else
+    callback "ASSIGNMENT DOES NOT EXIST"
 
-exports.setTermMastery = (assignmentName, term, student, mastery, callback)->
+exports.setTermMastery = (assignmentName, term, student, correct, incorrect, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   if currentAssignments.indexOf(assignmentName) > -1
     studentModel.findOne({username:student},(err, doc)->
@@ -304,10 +333,14 @@ exports.setTermMastery = (assignmentName, term, student, mastery, callback)->
         termIndex = assignTerms.map((assignTerms) ->
           assignTerms.term
         ).indexOf term
+        console.log(correct + "   " + incorrect)
+        correct = parseInt(correct)
+        incorrect = parseInt(incorrect)
         if termIndex > -1
-          doc.assignments[assignIndex].terms[termIndex] = {term:term,mastery:mastery}
+          doc.assignments[assignIndex].terms[termIndex].correct += correct
+          doc.assignments[assignIndex].terms[termIndex].incorrect += incorrect
         else
-          doc.assignments[assignIndex].terms.push({term:term,mastery:mastery})
+          doc.assignments[assignIndex].terms.push({term:term,correct:correct,incorrect:incorrect})
         doc.markModified('assignments')
         doc.save((err)->
           if err
@@ -347,8 +380,31 @@ exports.pullStudentAssignments = (username, password, callback) ->
     return true
   return
 
+exports.pullStudentAssignment = (student, assignmentName, callback)->
+  studentModel = mongoose.model(studentCollection, studentSchema)
+  if currentAssignments.indexOf(assignmentName) > -1
+    studentModel.findOne({username:student},(err, doc)->
+      exists = false
+      for assign in doc.assignments
+        if assign.assignmentName == assignmentName
+          exists = true
+          break
+      if exists == true
+        newArr = doc.assignments
+        assignIndex = newArr.map((newArr) ->
+          newArr.assignmentName
+        ).indexOf assignmentName
+        callback doc.assignments[assignIndex].terms
+      else
+        callback "NOT ASSIGNED"
+    )
+  else
+    callback "ASSIGNMENT DOES NOT EXIST"
+
 exports.pullAssignment = (collectionName, callback) ->
+  console.log("PULLING ASSIGN")
   sortAssignments()
+  console.log(collectionName)
   readFromDatabase(collectionName, genericContentSchema, (dataToReturn)->
     callback dataToReturn
   )
