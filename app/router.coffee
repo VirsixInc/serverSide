@@ -78,23 +78,23 @@ module.exports = (app) ->
     dbHandle.pullStudent(req.query.teacher, req.query.student, (results)->
       if results.student != null
         res.render 'indiStudent',
-          assignments:results.assignments,
+          assignments:results.student.assignments,
           student:results.student
     )
 
   app.get '/home/student/pullAssignment?*', (req, res)->
     dbHandle.pullStudentAssignment(req.query.student, req.query.assignmentName, (assignToReturn)->
-      if assignToReturn
+      if assignToReturn != "NOT ASSIGNED"
         console.log(assignToReturn)
         res.render 'terms',
           assignment:assignToReturn
       else
-        res.render "no terms"
+        res.render("no terms")
     )
 
     return
   app.get '/home/listStudents', (req, res) ->
-    dbHandle.pullStudents("Kathy", (results)->
+    dbHandle.pullStudents("Kathy",true, (results)->
       if results.students.length > 0
         res.render 'trackStudents.jade',
           title: 'All students',

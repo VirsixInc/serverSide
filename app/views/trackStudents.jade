@@ -8,11 +8,37 @@ block content
     table.table.table-bordered
       thead
         tr
+          th
+          - for(var i =0;i<assignments.length;i++)
+            th=assignments[i].assignName
+      tbody
+        tr
+          td Total Students Played
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].totalStudents
+        tr
+          td Total Game Time
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].totalTime
+        tr
+          td Total Mastery
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].totalMastery
+        tr
+          td Mastery Average
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].mastAvg
+        tr
+          td Time Spent Average
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].timeSpentAvg
+
+    table.table.table-bordered
+      thead
+        tr
           th(style='width:40px') Username
           th(style='width:40px') Password
           th(style='width:100px') Teacher
-          - for(var i =0;i<assignments.length;i++)
-            th=assignments[i]
       tbody
       - for(var i =0; i<students.length;i++)
         tr
@@ -21,6 +47,8 @@ block content
               =students[i].username
           td=students[i].password
           td=students[i].teacher
+
+        //
           - for(var j = 0;j<students[i].assignments.length;j++)
             td
               input(type='text', value=students[i].assignments[j].mastery, class=i+'dial'+j)
@@ -35,5 +63,5 @@ block content
                     });
                 });
               p=students[i].assignments[j].timeSpentOnAssign
-
+              
 block scripts

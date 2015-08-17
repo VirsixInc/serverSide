@@ -179,7 +179,7 @@ exports.addStudent = (teacher, username, password, callback) ->
   else
     callback "username is blank || password is blank"
 
-exports.pullStudents = (teacherName, callback)->
+exports.pullStudents = (teacherName,analytics, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   console.log(currentAssignments)
   teacherName = "Kathy"
@@ -187,20 +187,48 @@ exports.pullStudents = (teacherName, callback)->
     if err
       callback err
     else
-      callback {students:results, assignments:currentAssignments}
+      if !analytics
+        callback {students:results, assignments:currentAssignments}
+      else
+        assignmentsCallBack = []
+        for assignment in currentAssignments
+          assignCb = "NULL"
+          totalStudentsPlayed = 0
+          totalTime = 0
+          totalMastery = 0
+          for student in results
+            indexOfAssign = student.assignments.map((e)-> return e.assignmentName).indexOf(assignment)
+            if indexOfAssign > -1
+              timeToAdd = student.assignments[indexOfAssign].timeSpentOnAssign
+              timeToAdd = timeToAdd.split(":")
+              timeToAdd = parseInt(timeToAdd[0])*3600 +  parseInt(timeToAdd[1])*60 + parseInt(timeToAdd[2])
+              if timeToAdd > 0
+                totalStudentsPlayed++
+              totalTime = totalTime + timeToAdd
+              totalMastery = totalMastery + student.assignments[indexOfAssign].mastery
+          assignCb = {
+            assignName:assignment,
+            totalStudents:(totalStudentsPlayed),
+            totalTime:formatSeconds(totalTime),
+            totalMastery:totalMastery,
+            mastAvg:totalMastery/results.length,
+            timeSpentAvg:formatSeconds(totalTime/results.length)
+          }
+          assignmentsCallBack.push(assignCb)
+        callback {students:results, assignments:assignmentsCallBack}
+
     return
   )
   return
 
 exports.pullStudent = (teacherName, student, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
-  console.log(currentAssignments)
   teacherName = "Kathy"
-  studentModel.find({teacher:teacherName, username:student}, '-_id -__v').sort([['username', 'ascending']]).exec( (err, results)->
+  studentModel.findOne({teacher:teacherName, username:student}, '-_id -__v').sort([['username', 'ascending']]).exec( (err, result)->
     if err
       callback err
     else
-      callback {students:results, assignments:currentAssignments}
+      callback {student:result, assignments:result.assignments}
     return
   )
   return

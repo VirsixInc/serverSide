@@ -8,8 +8,19 @@ block content
     table.table.table-bordered
       thead
         tr
+          th=student.username
           - for(var i =0;i<assignments.length;i++)
             th
-              a(href="/home/student/pullAssign?assign="+assignments[i])
-                =assignments[i]
+              a(href="/home/student/pullAssignment?assignmentName="+assignments[i]+"&student="+student)
+                =assignments[i].assignmentName
+      tbody
+        tr
+          td Mastery
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].mastery
+        tr
+          td Time Spent
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].timeSpentOnAssign
+
 block scripts
