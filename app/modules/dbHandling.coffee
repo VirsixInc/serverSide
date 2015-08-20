@@ -10,6 +10,7 @@ dbHost = 'localhost'
 supportedTemplates = [
   "cards",
   "buckets",
+  "multiples",
   "sequences"
   ]
 
@@ -33,7 +34,7 @@ termSchema = mongoose.Schema({
   termsPerStudent:[]
 })
 
-mongoose.connect('mongodb://localhost:27017/brainrushcontent')
+mongoose.connect('mongodb://localhost:27017/devryTestDB')
 mongConnect = mongoose.connection
 mongConnect.on('error', console.error.bind(console, 'connect error'))
 mongConnect.on('open',(callback)->

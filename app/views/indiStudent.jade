@@ -11,7 +11,7 @@ block content
           th=student.username
           - for(var i =0;i<assignments.length;i++)
             th
-              a(href="/home/student/pullAssignment?assignmentName="+assignments[i]+"&student="+student)
+              a(href="/home/student/pullAssignment?assignmentName="+assignments[i].assignmentName+"&student="+student.username)
                 =assignments[i].assignmentName
       tbody
         tr

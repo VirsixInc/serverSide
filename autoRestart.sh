@@ -2,7 +2,7 @@
 
 while true
 do
-if [ ! `pgrep prodDevry/app.coffee` ] ; then
+if [ ! `pgrep DEVRY_TEST/app.coffee` ] ; then
 coffee ../app.coffee
 fi
 sleep 30
