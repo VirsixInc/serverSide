@@ -286,6 +286,8 @@ formatSeconds = (seconds) ->
   date.setSeconds seconds
   date.toTimeString().replace /.*(\d{2}:\d{2}:\d{2}).*/, '$1'
 
+
+
 exports.addAssignmentToAllStudents = (assignmentName, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   if currentAssignments.indexOf(assignmentName) > -1
@@ -306,7 +308,7 @@ exports.addAssignmentToAllStudents = (assignmentName, callback)->
               console.log("HAS IMAGES!!!")
           console.log(hasImages)
           studentModel.findByIdAndUpdate(doc.id,
-            {$push:{assignments:{assignmentName:assignmentName, mastery:0, timeSpentOnAssign:formatSeconds(0), hasImages:hasImages, terms:[]}}},(err, model) ->
+            {$push:{assignments:{assignmentName:assignmentName, mastery:0, timeSpentOnAssign:formatSeconds(0), hasImages:hasImages, terms:[], order:-1}}},(err, model) ->
               if err
                 console.log err
               else
@@ -343,6 +345,39 @@ exports.pullTermMastery = (assignmentName, student, callback)->
   else
     callback "ASSIGNMENT DOES NOT EXIST"
 
+exports.setAssignmentOrder = (assignmentName, order, callback)->
+  studentModel = mongoose.model(studentCollection, studentSchema)
+  if currentAssignments.indexOf(assignmentName) > -1
+    studentModel.find({},(err, docs)->
+      docs.forEach((doc)->
+        exists = false
+        for allAssigns in doc.assignments
+          if allAssigns.assignmentName == assignmentName
+            exists = true
+            break
+        if exists == true
+          newArr = doc.assignments
+
+          assignIndex = newArr.map((newArr) ->
+            newArr.assignmentName
+          ).indexOf assignmentName
+          doc.assignments[assignIndex].order = order
+          doc.markModified('assignments')
+          doc.save((err)->
+            if err
+              callback err
+            else
+              callback "SUCCESS"
+          )
+        else
+          console.log "exists!"
+      )
+      sortAssignments()
+      callback ("Assignment added:" + assignmentName)
+    )
+  else
+    callback "Assignment does not exist"
+
 exports.setTermMastery = (assignmentName, term, student, correct, incorrect, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
   if currentAssignments.indexOf(assignmentName) > -1
@@ -377,20 +412,6 @@ exports.setTermMastery = (assignmentName, term, student, correct, incorrect, cal
           else
             callback "SUCCESS"
         )
-        ###
-        studentModel.update({_id:doc.id},{$set:{assignments:doc.assignments}},(err,result)->
-          if err
-            callback err
-          else
-            callback result
-        )
-        studentModel.findByIdAndUpdate(doc[0].id,{$set:{assignments:doc[0].assignments}},(err,result)->
-          if err
-            callback err
-          else
-            callback result
-        )
-        ###
       else
         callback "ASSIGN IS NOT ASSIGNED TO STUDENT"
       )
