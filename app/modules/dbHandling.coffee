@@ -197,10 +197,16 @@ exports.pullStudents = (teacherName,analytics, callback)->
           totalStudentsPlayed = 0
           totalTime = 0
           totalMastery = 0
+          order = -1
+          surveyLink = ""
+          dispName = ""
           for student in results
             indexOfAssign = student.assignments.map((e)-> return e.assignmentName).indexOf(assignment)
             if indexOfAssign > -1
               timeToAdd = student.assignments[indexOfAssign].timeSpentOnAssign
+              order = student.assignments[indexOfAssign].order
+              surveyLink = student.assignments[indexOfAssign].survey
+              dispName = student.assignments[indexOfAssign].dispName
               timeToAdd = timeToAdd.split(":")
               timeToAdd = parseInt(timeToAdd[0])*3600 +  parseInt(timeToAdd[1])*60 + parseInt(timeToAdd[2])
               if timeToAdd > 0
@@ -209,6 +215,9 @@ exports.pullStudents = (teacherName,analytics, callback)->
               totalMastery = totalMastery + student.assignments[indexOfAssign].mastery
           assignCb = {
             assignName:assignment,
+            order:order,
+            dispName:dispName,
+            survey:surveyLink,
             totalStudents:(totalStudentsPlayed),
             totalTime:formatSeconds(totalTime),
             totalMastery:totalMastery,
@@ -344,6 +353,72 @@ exports.pullTermMastery = (assignmentName, student, callback)->
     )
   else
     callback "ASSIGNMENT DOES NOT EXIST"
+
+exports.setAssignmentSurvey = (assignmentName, survey, callback)->
+  studentModel = mongoose.model(studentCollection, studentSchema)
+  if currentAssignments.indexOf(assignmentName) > -1
+    studentModel.find({},(err, docs)->
+      docs.forEach((doc)->
+        exists = false
+        for allAssigns in doc.assignments
+          if allAssigns.assignmentName == assignmentName
+            exists = true
+            break
+        if exists == true
+          newArr = doc.assignments
+
+          assignIndex = newArr.map((newArr) ->
+            newArr.assignmentName
+          ).indexOf assignmentName
+          doc.assignments[assignIndex].survey = survey
+          doc.markModified('assignments')
+          doc.save((err)->
+            if err
+              callback err
+            else
+              callback "SUCCESS"
+          )
+        else
+          console.log "exists!"
+      )
+      sortAssignments()
+      callback ("Assignment added:" + assignmentName)
+    )
+  else
+    callback "Assignment does not exist"
+
+exports.setAssignmentName = (assignmentName, dispName, callback)->
+  studentModel = mongoose.model(studentCollection, studentSchema)
+  if currentAssignments.indexOf(assignmentName) > -1
+    studentModel.find({},(err, docs)->
+      docs.forEach((doc)->
+        exists = false
+        for allAssigns in doc.assignments
+          if allAssigns.assignmentName == assignmentName
+            exists = true
+            break
+        if exists == true
+          newArr = doc.assignments
+
+          assignIndex = newArr.map((newArr) ->
+            newArr.assignmentName
+          ).indexOf assignmentName
+          doc.assignments[assignIndex].dispName = dispName
+          doc.markModified('assignments')
+          doc.save((err)->
+            if err
+              callback err
+            else
+              callback "SUCCESS"
+          )
+        else
+          console.log "exists!"
+      )
+      sortAssignments()
+      callback ("Assignment added:" + assignmentName)
+    )
+  else
+    callback "Assignment does not exist"
 
 exports.setAssignmentOrder = (assignmentName, order, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)

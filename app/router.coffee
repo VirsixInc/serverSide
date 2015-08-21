@@ -60,8 +60,28 @@ module.exports = (app) ->
     if req.session.user == undefined
       res.redirect '/'
     else
-      console
       dbHandle.addAssignmentToAllStudents req.query.assignmentName, (results)->
+        res.send(results)
+
+  app.get '/home/setAssignmentName?*', (req, res)->
+    if req.query.assignmentName == undefined || req.query.newName == undefined
+      res.send("BAD QUERY")
+    else
+      dbHandle.setAssignmentName req.query.assignmentName, req.query.newName, (results)->
+        res.send(results)
+
+  app.get '/home/setAssignmentSurvey?*', (req, res)->
+    if req.query.assignmentName == undefined || req.query.survey == undefined
+      res.send("BAD QUERY")
+    else
+      dbHandle.setAssignmentSurvey req.query.assignmentName, req.query.survey, (results)->
+        res.send(results)
+
+  app.get '/home/setAssignmentOrder?*', (req, res)->
+    if req.query.assignmentName == undefined || req.query.order == undefined
+      res.send("BAD QUERY")
+    else
+      dbHandle.setAssignmentOrder req.query.assignmentName, req.query.order, (results)->
         res.send(results)
 
   app.get '/home/addStudent?*', (req, res)->

@@ -13,6 +13,20 @@ block content
             th=assignments[i].assignName
       tbody
         tr
+          td Order
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].order
+        tr
+          td Assignment Display Name
+          - for(var i =0;i<assignments.length;i++)
+            td=assignments[i].dispName
+        tr
+          td Current Survey Link
+          - for(var i =0;i<assignments.length;i++)
+            td
+              a(href="" + assignments[i].survey)
+                =assignments[i].survey
+        tr
           td Total Students Played
           - for(var i =0;i<assignments.length;i++)
             td=assignments[i].totalStudents
