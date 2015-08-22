@@ -44,7 +44,7 @@ module.exports = (app) ->
       res.send(results)
 
   app.get '/client/setTermMastery?*', (req, res)->
-    dbHandle.setTermMastery req.query.assignmentName, req.query.term, req.query.student, req.query.correct, req.query.incorrect, (results)->
+    dbHandle.setTermMastery req.query.assignmentName, req.query.student, req.query.content, (results)->
       res.send(results)
 
   app.get '/client/setAssignmentTime?*', (req, res)->

@@ -453,8 +453,9 @@ exports.setAssignmentOrder = (assignmentName, order, callback)->
   else
     callback "Assignment does not exist"
 
-exports.setTermMastery = (assignmentName, term, student, correct, incorrect, callback)->
+exports.setTermMastery = (assignmentName, student, content, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
+  console.log(content)
   if currentAssignments.indexOf(assignmentName) > -1
     studentModel.findOne({username:student},(err, doc)->
       exists = false
@@ -463,28 +464,37 @@ exports.setTermMastery = (assignmentName, term, student, correct, incorrect, cal
           exists = true
           break
       if exists == true
+        contToUpload = content.split("|")
         newArr = doc.assignments
+        for cont in contToUpload
+          splitContent = cont.split(",")
 
-        assignIndex = newArr.map((newArr) ->
-          newArr.assignmentName
-        ).indexOf assignmentName
-        assignTerms = newArr[assignIndex].terms
-        termIndex = assignTerms.map((assignTerms) ->
-          assignTerms.term
-        ).indexOf term
-        console.log(correct + "   " + incorrect)
-        correct = parseInt(correct)
-        incorrect = parseInt(incorrect)
-        if termIndex > -1
-          doc.assignments[assignIndex].terms[termIndex].correct += correct
-          doc.assignments[assignIndex].terms[termIndex].incorrect += incorrect
-        else
-          doc.assignments[assignIndex].terms.push({term:term,correct:correct,incorrect:incorrect})
+          assignIndex = newArr.map((newArr) ->
+            newArr.assignmentName
+          ).indexOf assignmentName
+          assignTerms = newArr[assignIndex].terms
+          termIndex = assignTerms.map((assignTerms) ->
+            assignTerms.term
+          ).indexOf splitContent[0]
+          term = splitContent[0]
+          correct = parseInt(splitContent[1])
+          incorrect = parseInt(splitContent[2])
+          newTerm = {
+            term:term,
+            correct:correct,
+            incorrect:incorrect}
+          if termIndex > -1
+            doc.assignments[assignIndex].terms[termIndex] = newTerm
+          else
+            doc.assignments[assignIndex].terms.push(newTerm)
         doc.markModified('assignments')
         doc.save((err)->
+          console.log("SAVING")
           if err
+            console.log(err)
             callback err
           else
+            console.log("SUCCESS")
             callback "SUCCESS"
         )
       else
