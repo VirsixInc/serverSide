@@ -212,7 +212,7 @@ exports.pullStudents = (teacherName,analytics, callback)->
               if timeToAdd > 0
                 totalStudentsPlayed++
               totalTime = totalTime + timeToAdd
-              totalMastery = totalMastery + student.assignments[indexOfAssign].mastery
+              totalMastery = totalMastery + parseInt(student.assignments[indexOfAssign].mastery)
           assignCb = {
             assignName:assignment,
             order:order,
