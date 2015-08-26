@@ -224,6 +224,7 @@ exports.pullStudents = (teacherName,analytics, callback)->
             mastAvg:totalMastery/results.length,
             timeSpentAvg:formatSeconds(totalTime/results.length)
           }
+          deformatSeconds(formatSeconds(totalTime/results.length))
           assignmentsCallBack.push(assignCb)
         callback {students:results, assignments:assignmentsCallBack}
 
@@ -273,7 +274,11 @@ exports.setAssignmentTime = (assignmentName, student, time, callback)->
       elementPos = doc.assignments.map((x) ->
         x.assignmentName
       ).indexOf(assignmentName)
-      doc.assignments[elementPos].timeSpentOnAssign = formatSeconds(time)
+      secondsToWrite = deformatSeconds(doc.assignments[elementPos].timeSpentOnAssign) + parseInt(time)
+      console.log(time)
+      console.log(doc.assignments[elementPos].timeSpentOnAssign)
+      console.log(secondsToWrite)
+      doc.assignments[elementPos].timeSpentOnAssign = formatSeconds(secondsToWrite)
       doc.markModified('assignments')
       doc.save()
       callback doc
@@ -295,7 +300,11 @@ formatSeconds = (seconds) ->
   date.setSeconds seconds
   date.toTimeString().replace /.*(\d{2}:\d{2}:\d{2}).*/, '$1'
 
-
+deformatSeconds = (seconds) ->
+  hours = parseInt(seconds.substring(0,2))
+  minutes = parseInt(seconds.substring(3,5))
+  seconds = parseInt(seconds.substring(6,8))
+  return (hours + minutes + seconds)
 
 exports.addAssignmentToAllStudents = (assignmentName, callback)->
   studentModel = mongoose.model(studentCollection, studentSchema)
