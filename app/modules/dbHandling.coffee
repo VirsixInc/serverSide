@@ -221,7 +221,7 @@ exports.pullStudents = (teacherName,analytics, callback)->
             totalStudents:(totalStudentsPlayed),
             totalTime:formatSeconds(totalTime),
             totalMastery:totalMastery,
-            mastAvg:totalMastery/results.length,
+            mastAvg:Math.round(totalMastery/results.length),
             timeSpentAvg:formatSeconds(totalTime/results.length)
           }
           deformatSeconds(formatSeconds(totalTime/results.length))
@@ -275,9 +275,6 @@ exports.setAssignmentTime = (assignmentName, student, time, callback)->
         x.assignmentName
       ).indexOf(assignmentName)
       secondsToWrite = deformatSeconds(doc.assignments[elementPos].timeSpentOnAssign) + parseInt(time)
-      console.log(time)
-      console.log(doc.assignments[elementPos].timeSpentOnAssign)
-      console.log(secondsToWrite)
       doc.assignments[elementPos].timeSpentOnAssign = formatSeconds(secondsToWrite)
       doc.markModified('assignments')
       doc.save()
